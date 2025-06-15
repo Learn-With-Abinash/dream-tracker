@@ -2473,30 +2473,23 @@ function handleAddGoal(e) {
     }
 
     function removeMember(memberId) {
-      // Check if member exists in any goals
-      const memberInGoals = appState.goals.some((goal) =>
-        goal.contributors.includes(memberId)
-      );
+  // 1️⃣ Remove from household
+  appState.household.members = appState.household.members.filter(
+    member => member.id !== memberId
+  );
 
-      if (memberInGoals) {
-        showNotification('Cannot remove member who is contributing to goals', 'error');
-        return;
-      }
+  // 2️⃣ Also remove from any goal’s contributors
+  appState.goals.forEach(goal => {
+    goal.contributors = goal.contributors.filter(id => id !== memberId);
+  });
 
-      // Remove member
-      appState.household.members = appState.household.members.filter(
-        (member) => member.id !== memberId
-      );
+  // 3️⃣ Persist & refresh UI
+  saveAppState();
+  updateDashboard();
+  updateMembersList();
 
-      // Save to localStorage
-      saveAppState();
-
-      // Update UI
-      updateDashboard();
-      updateMembersList();
-
-      // Show success notification
-      showNotification('Member has been removed');
+  // 4️⃣ Notify
+  showNotification('Member removed (and unassigned from any goals).');
     }
 
     // Settings handlers
