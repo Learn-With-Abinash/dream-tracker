@@ -10,6 +10,16 @@
     rel="stylesheet"
   />
   <style>
+    /* inside your existing <style> */
+    #dailyGoalsModal .snap-x { scroll-snap-type: x mandatory; }
+    .goal-card–popup {
+    flex: 0 0 80%;
+    scroll-snap-align: start;
+    background: #f9fafb;
+    border-radius: .75rem;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
     body {
       font-family: 'Poppins', sans-serif;
       background-color: #f0f4f8;
@@ -138,16 +148,6 @@
   display: none !important;
 }
 
-/* inside your existing <style> */
-#dailyGoalsModal .snap-x { scroll-snap-type: x mandatory; }
-.goal-card–popup {
-  flex: 0 0 80%;
-  scroll-snap-align: start;
-  background: #f9fafb;
-  border-radius: .75rem;
-  padding: 1rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
   </style>
 </head>
 <body>
@@ -1568,6 +1568,13 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('openSettingsBtn').classList.add('hidden');
   document.getElementById('closeGoalModalBtn').addEventListener('click', closeGoalModal);
   document.getElementById('cancelGoal').addEventListener('click', closeGoalModal);
+  // Close button for the Daily Goals popup
+  const closeBtn = document.getElementById('closeDailyGoals');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      document.getElementById('dailyGoalsModal').classList.add('hidden');
+    });
+  }
   initApp();
 });
     // App state (including settings, profilePic, expenses)
@@ -1682,14 +1689,14 @@ function showDashboard() {
       });
 
       // Auth tab switching
-      document.getElementById('signupTab').addEventListener('click', () => {
+        document.getElementById('signupTab').addEventListener('click', () => {
         document.getElementById('signupTab').classList.add('active');
         document.getElementById('loginTab').classList.remove('active');
         document.getElementById('signupForm').classList.remove('hidden');
         document.getElementById('loginForm').classList.add('hidden');
       });
 
-      document.getElementById('loginTab').addEventListener('click', () => {
+        document.getElementById('loginTab').addEventListener('click', () => {
         document.getElementById('loginTab').classList.add('active');
         document.getElementById('signupTab').classList.remove('active');
         document.getElementById('loginForm').classList.remove('hidden');
@@ -1701,7 +1708,7 @@ function showDashboard() {
       document.getElementById('userLoginForm').addEventListener('submit', handleLogin);
 
       // Event listeners
-      document.getElementById('getStartedBtn').addEventListener('click', () => {
+        document.getElementById('getStartedBtn').addEventListener('click', () => {
         document.getElementById('welcomeScreen').classList.add('hidden');
         document.getElementById('householdSetup').classList.remove('hidden');
       });
