@@ -9,17 +9,13 @@
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     rel="stylesheet"
   />
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/swiper/swiper-bundle.min.css"
+    />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
   <style>
-    /* inside your existing <style> */
-    #dailyGoalsModal .snap-x { scroll-snap-type: x mandatory; }
-    .goal-card–popup {
-    flex: 0 0 80%;
-    scroll-snap-align: start;
-    background: #f9fafb;
-    border-radius: .75rem;
-    padding: 1rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+
     body {
       font-family: 'Poppins', sans-serif;
       background-color: #f0f4f8;
@@ -1545,17 +1541,29 @@
   </div>
 
   <!-- Daily Goals Popup Modal -->
-    <div id="dailyGoalsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 relative">
-        <button id="closeDailyGoals" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
-        ✕
-        </button>
-        <h3 class="text-xl font-semibold mb-4">Today’s Savings Goals</h3>
-        <div class="overflow-x-auto flex space-x-4 snap-x snap-mandatory">
-        <!-- JS will inject .goal-card–popup elements here -->
-        </div>
+<div
+  id="dailyGoalsModal"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+>
+  <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 relative">
+    <button
+      id="closeDailyGoals"
+      class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+    >✕</button>
+    <h3 class="text-xl font-semibold mb-4">Today’s Savings Goals</h3>
+
+    <!-- Swiper -->
+    <div class="swiper" id="dailyGoalsSwiper">
+      <div class="swiper-wrapper">
+        <!-- JS will inject .swiper-slide elements here -->
+      </div>
+      <!-- arrows -->
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
     </div>
-    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -1856,6 +1864,7 @@ function showDashboard() {
         showGoalsSetup();
     } else {
         showDashboard();
+        showDailyGoalsModal();
     }
 
       // Show success notification
@@ -1866,6 +1875,8 @@ function showDashboard() {
 
     if (signupSuccessful) {
     showDashboard(); // Or showWelcomeScreen() if you need setup first
+    showDailyGoalsModal();
+
   }  
 
     }
@@ -1899,6 +1910,7 @@ function showDashboard() {
       // Show appropriate screen
       if (appState.household.name && appState.goals.length > 0) {
         showDashboard();
+        showDailyGoalsModal();
         updateDashboard();
       } else {
         showWelcomeScreen();
@@ -1910,6 +1922,7 @@ function showDashboard() {
     showGoalsSetup();
   } else {
     showDashboard();
+    showDailyGoalsModal();
   }
       // Show success notification
       showNotification(`Welcome back, ${user.name}!`);
@@ -1919,6 +1932,7 @@ function showDashboard() {
     
   if (loginSuccessful) {
     showDashboard(); // Or showWelcomeScreen() if needed
+    showDailyGoalsModal();
   }  
 
     }
@@ -2246,6 +2260,7 @@ function performLogout() {
 
       // Show dashboard
     showDashboard();
+    showDailyGoalsModal();
       updateDashboard();
 
       // Show success notification
@@ -3610,6 +3625,79 @@ function handleSignup(e) {
   uponLoginSuccess();
   showNotification('Account created! Here are your goals.');
 }
+
+let dailyGoalsSwiper = null;
+
+function showDailyGoalsModal() {
+  const modal     = document.getElementById('dailyGoalsModal');
+  const wrapper   = document.querySelector('#dailyGoalsSwiper .swiper-wrapper');
+
+  // clear out old slides
+  wrapper.innerHTML = '';
+
+  // build slides
+  if (appState.goals.length === 0) {
+    wrapper.innerHTML = `<div class="swiper-slide p-4 text-gray-600">No active goals</div>`;
+  } else {
+    appState.goals.forEach(goal => {
+      // calculate ₹/day
+      const remaining   = goal.cost - goal.currentSavings;
+      let daysLeft      = Math.ceil((new Date(goal.targetDate) - new Date())/(1000*60*60*24));
+      daysLeft          = daysLeft > 0 ? daysLeft : 1;
+      const perDay      = Math.ceil(remaining / daysLeft).toLocaleString('en-IN');
+
+      // slide markup
+      const slide = document.createElement('div');
+      slide.className = 'swiper-slide flex flex-col items-center justify-center p-6 bg-gray-50 rounded-xl';
+      slide.innerHTML = `
+        <h4 class="font-semibold text-lg mb-2">${goal.name}</h4>
+        <p class="text-xl font-bold mb-2">₹${perDay} / day</p>
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+          <div class="bg-indigo-600 h-2 rounded-full" style="width:${
+            Math.min(100,(goal.currentSavings/goal.cost)*100)
+          }%"></div>
+        </div>
+        <p class="text-sm text-gray-500">${
+          Math.min(100,((goal.currentSavings/goal.cost)*100).toFixed(1))
+        }% complete</p>
+      `;
+      wrapper.appendChild(slide);
+    });
+  }
+
+  modal.classList.remove('hidden');
+
+  // initialize or update Swiper
+  if (dailyGoalsSwiper) {
+    dailyGoalsSwiper.update();
+  } else {
+    dailyGoalsSwiper = new Swiper('#dailyGoalsSwiper', {
+      effect: 'coverflow',
+      grabCursor: true,
+      centeredSlides: true,
+      slidesPerView: 'auto',
+      coverflowEffect: {
+        rotate: 30,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+        slideShadows: false,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    });
+  }
+}
+
+// close button
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('closeDailyGoals');
+  if (btn) btn.addEventListener('click', () => {
+    document.getElementById('dailyGoalsModal').classList.add('hidden');
+  });
+});
 
 </script>
   
