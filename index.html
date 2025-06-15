@@ -1163,6 +1163,7 @@
         <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
         <h3 class="text-xl font-semibold text-gray-800 mb-4">Add New Goal</h3>
         <form id="addGoalForm" class="space-y-4">
+            <input type="hidden" id="modalEditGoalId" value="" />
             <div>
             <label for="modalGoalCategory" class="block text-sm font-medium text-gray-700 mb-1">
                 Item Category
@@ -2321,53 +2322,77 @@ function performLogout() {
       }
     }
 
-    function handleAddGoal(e) {
-      e.preventDefault();
+function handleAddGoal(e) {
+  e.preventDefault();
 
-      const category = document.getElementById('modalGoalCategory').value;
-      const name = document.getElementById('modalGoalName').value.trim();
-      const cost = parseFloat(document.getElementById('modalGoalCost').value) || 0;
-      const date = document.getElementById('modalGoalDate').value;
-      const bankName = document.getElementById('modalGoalBank').value.trim();
+  // 1️⃣ Read the hidden edit-mode marker
+  const editId = document.getElementById('modalEditGoalId').value;
 
-      // Get contributors
-      const contributors = [];
-      const contributorCheckboxes = document.querySelectorAll(
-        '#modalGoalContributors input:checked'
-      );
-      contributorCheckboxes.forEach((checkbox) => {
-        contributors.push(checkbox.value);
-      });
+  // 2️⃣ Grab all the form values
+  const category = document.getElementById('modalGoalCategory').value;
+  const name     = document.getElementById('modalGoalName').value.trim();
+  const cost     = parseFloat(document.getElementById('modalGoalCost').value) || 0;
+  const date     = document.getElementById('modalGoalDate').value;
+  const bankName = document.getElementById('modalGoalBank').value.trim();
 
-      if (category && name && cost > 0 && date && contributors.length > 0 && bankName) {
-        appState.goals.push({
-          id: generateId(),
-          category,
-          name,
-          cost,
-          targetDate: date,
-          bankName,
-          contributors,
-          currentSavings: 0
-        });
+  // 3️⃣ Collect contributors
+  const contributors = [];
+  document.querySelectorAll('#modalGoalContributors input:checked')
+    .forEach(cb => contributors.push(cb.value));
 
-        // Save to localStorage
-        saveAppState();
+  // 4️⃣ Basic validation
+  if (!category || !name || cost <= 0 || !date || !bankName || contributors.length === 0) {
+    showNotification('Please fill in all fields and select at least one contributor', 'error');
+    return;
+  }
 
-        // Update UI
-        updateDashboard();
-        closeGoalModal();
+  if (editId) {
+    // ─── UPDATE EXISTING GOAL ───
+    const goal = appState.goals.find(g => g.id === editId);
+    if (!goal) return;
 
-        // Reset form fields
-        document.getElementById('modalGoalCategory').value = '';
-        document.getElementById('modalGoalName').value = '';
-        document.getElementById('modalGoalCost').value = '';
-        document.getElementById('modalGoalBank').value = '';
+    Object.assign(goal, {
+      category,
+      name,
+      cost,
+      targetDate: date,
+      bankName,
+      contributors
+    });
 
-        // Show success notification
-        showNotification(`New goal "${name}" has been added!`);
-      }
-    }
+    saveAppState();
+    updateDashboard();
+    closeGoalModal();
+    showNotification(`Goal "${name}" updated!`);
+
+    // reset edit marker
+    document.getElementById('modalEditGoalId').value = '';
+    return;
+  }
+
+  // ─── CREATE A NEW GOAL ───
+  const newGoal = {
+    id: generateId(),
+    category,
+    name,
+    cost,
+    targetDate: date,
+    bankName,
+    contributors,
+    currentSavings: 0
+  };
+  appState.goals.push(newGoal);
+
+  saveAppState();
+  updateDashboard();
+  closeGoalModal();
+
+  // clear form
+  document.getElementById('modalAddGoalForm').reset(); // or individually clear fields
+
+  showNotification(`New goal "${name}" has been added!`);
+}
+
 
     function handleAddMember(e) {
       e.preventDefault();
@@ -2400,9 +2425,30 @@ function performLogout() {
     }
 
     function handleEditGoal() {
-      // For now, editing in details mode is not implemented
-      closeGoalDetailsModal();
-      showNotification('Goal editing will be available in a future update', 'error');
+  // 1. Get the goal ID from the details modal
+  const goalId = document
+    .getElementById('goalDetailsModal')
+    .getAttribute('data-goal-id');
+  const goal = appState.goals.find(g => g.id === goalId);
+  if (!goal) return;
+
+  // 2. Populate the “Add/Edit Goal” modal fields
+  document.getElementById('modalEditGoalId').value   = goal.id;
+  document.getElementById('modalGoalCategory').value = goal.category;
+  document.getElementById('modalGoalName').value     = goal.name;
+  document.getElementById('modalGoalCost').value     = goal.cost;
+  document.getElementById('modalGoalDate').value     = goal.targetDate;
+  document.getElementById('modalGoalBank').value     = goal.bankName;
+
+  // 3. Populate the contributor checkboxes
+  const container = document.getElementById('modalGoalContributors');
+  container.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.checked = goal.contributors.includes(cb.value);
+  });
+
+  // 4. Close details, open goal modal
+  closeGoalDetailsModal();
+  openGoalModal();
     }
 
     function handleAddGoalSavings() {
