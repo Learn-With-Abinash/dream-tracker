@@ -1543,7 +1543,21 @@
     </div>
     <p id="notificationText" class="text-gray-800"></p>
   </div>
+
+  <!-- Daily Goals Popup Modal -->
+    <div id="dailyGoalsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 relative">
+        <button id="closeDailyGoals" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+        ✕
+        </button>
+        <h3 class="text-xl font-semibold mb-4">Today’s Savings Goals</h3>
+        <div class="overflow-x-auto flex space-x-4 snap-x snap-mandatory">
+        <!-- JS will inject .goal-card–popup elements here -->
+        </div>
+    </div>
+    </div>
 </div>
+
 <script>
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -3593,18 +3607,7 @@ function handleSignup(e) {
   
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Daily Goals Popup Modal -->
-<div id="dailyGoalsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-  <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 relative">
-    <button id="closeDailyGoals" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
-      ✕
-    </button>
-    <h3 class="text-xl font-semibold mb-4">Today’s Savings Goals</h3>
-    <div class="overflow-x-auto flex space-x-4 snap-x snap-mandatory">
-      <!-- JS will inject .goal-card–popup elements here -->
-    </div>
-  </div>
-</div>
+
 
 </body>
 </html>
