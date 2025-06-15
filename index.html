@@ -1670,6 +1670,7 @@ function showDashboard() {
             applyProfileDisplay();
             if (appState.household.name && appState.goals.length > 0) {
               showDashboard();
+              showDailyGoalsModal();
               updateDashboard();
             } else {
               showWelcomeScreen();
