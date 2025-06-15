@@ -3567,107 +3567,52 @@ function calculateDailyRequirement(goal) {
   return (remaining / daysLeft).toFixed(2);
 }
 
-// Build and show the modal
-function showDailyGoalsModal() {
-  const modal = document.getElementById('dailyGoalsModal');
-  const container = modal.querySelector('div.overflow-x-auto');
-  container.innerHTML = '';
-
-  if (appState.goals.length === 0) {
-    container.innerHTML = '<p class="text-gray-600">No active goals</p>';
-  } else {
-    appState.goals.forEach(goal => {
-      const daily = calculateDailyRequirement(goal);
-      const card = document.createElement('div');
-      card.className = 'goal-card–popup snap-start';
-      card.innerHTML = `
-        <h4 class="font-semibold text-lg mb-2">${goal.name}</h4>
-        <p class="text-sm text-gray-500 mb-1">${getCategoryName(goal.category)}</p>
-        <p class="text-xl font-bold mb-2">₹${formatNumber(daily)} / day</p>
-        <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-          <div class="bg-indigo-600 h-2 rounded-full" style="width:${Math.min(100, (goal.currentSavings/goal.cost)*100)}%"></div>
-        </div>
-        <p class="text-xs text-gray-500">${Math.min(100, ((goal.currentSavings/goal.cost)*100).toFixed(1))}% complete</p>
-      `;
-      container.appendChild(card);
-    });
-  }
-
-  modal.classList.remove('hidden');
-}
-
-// Hook up close button
-document.getElementById('closeDailyGoals').addEventListener('click', () => {
-  document.getElementById('dailyGoalsModal').classList.add('hidden');
-});
-
-// Call this right after login/signup succeeds
-function uponLoginSuccess() {
-  // your existing post-login logic...
-  applyProfileDisplay();
-  updateDashboard();
-  // now show daily goals
-  showDailyGoalsModal();
-}
-
-// Replace calls to showDashboard() in your login/signup handlers with uponLoginSuccess()
-function handleLogin(e) {
-  // …validation…
-  appState.auth.isLoggedIn = true;
-  // …load state…
-  saveAppState();
-  uponLoginSuccess();
-  showNotification(`Welcome back, ${user.name}!`);
-}
-
-function handleSignup(e) {
-  // …after creating account…
-  uponLoginSuccess();
-  showNotification('Account created! Here are your goals.');
-}
-
 let dailyGoalsSwiper = null;
 
 function showDailyGoalsModal() {
-  const modal     = document.getElementById('dailyGoalsModal');
-  const wrapper   = document.querySelector('#dailyGoalsSwiper .swiper-wrapper');
+  const modal   = document.getElementById('dailyGoalsModal');
+  const wrapper = document.querySelector('#dailyGoalsSwiper .swiper-wrapper');
 
-  // clear out old slides
+  // 1️⃣ Clear out any previous slides
   wrapper.innerHTML = '';
 
-  // build slides
-  if (appState.goals.length === 0) {
-    wrapper.innerHTML = `<div class="swiper-slide p-4 text-gray-600">No active goals</div>`;
+  // 2️⃣ If no goals, show placeholder slide
+  if (!appState.goals.length) {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'swiper-slide p-4 text-gray-600';
+    placeholder.textContent = 'No active goals';
+    wrapper.appendChild(placeholder);
   } else {
+    // 3️⃣ Build one slide per goal
     appState.goals.forEach(goal => {
-      // calculate ₹/day
       const remaining   = goal.cost - goal.currentSavings;
-      let daysLeft      = Math.ceil((new Date(goal.targetDate) - new Date())/(1000*60*60*24));
+      let daysLeft      = Math.ceil((new Date(goal.targetDate) - new Date()) / (1000*60*60*24));
       daysLeft          = daysLeft > 0 ? daysLeft : 1;
       const perDay      = Math.ceil(remaining / daysLeft).toLocaleString('en-IN');
 
-      // slide markup
       const slide = document.createElement('div');
-      slide.className = 'swiper-slide flex flex-col items-center justify-center p-6 bg-gray-50 rounded-xl';
+      slide.className = 'swiper-slide flex flex-col items-center p-6 bg-gray-50 rounded-xl';
       slide.innerHTML = `
         <h4 class="font-semibold text-lg mb-2">${goal.name}</h4>
         <p class="text-xl font-bold mb-2">₹${perDay} / day</p>
         <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-          <div class="bg-indigo-600 h-2 rounded-full" style="width:${
-            Math.min(100,(goal.currentSavings/goal.cost)*100)
-          }%"></div>
+          <div
+            class="bg-indigo-600 h-2 rounded-full"
+            style="width:${Math.min(100, (goal.currentSavings/goal.cost)*100)}%"
+          ></div>
         </div>
-        <p class="text-sm text-gray-500">${
-          Math.min(100,((goal.currentSavings/goal.cost)*100).toFixed(1))
-        }% complete</p>
+        <p class="text-sm text-gray-500">
+          ${Math.min(100, ((goal.currentSavings/goal.cost)*100).toFixed(1))}% complete
+        </p>
       `;
       wrapper.appendChild(slide);
     });
   }
 
+  // 4️⃣ Show the modal
   modal.classList.remove('hidden');
 
-  // initialize or update Swiper
+  // 5️⃣ Initialize or update Swiper
   if (dailyGoalsSwiper) {
     dailyGoalsSwiper.update();
   } else {
@@ -3698,6 +3643,35 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dailyGoalsModal').classList.add('hidden');
   });
 });
+
+// Call this right after login/signup succeeds
+function uponLoginSuccess() {
+  // your existing post-login logic...
+  applyProfileDisplay();
+  updateDashboard();
+  // now show daily goals
+  showDailyGoalsModal();
+}
+
+// Replace calls to showDashboard() in your login/signup handlers with uponLoginSuccess()
+function handleLogin(e) {
+  // …validation…
+  appState.auth.isLoggedIn = true;
+  // …load state…
+  saveAppState();
+  uponLoginSuccess();
+  showNotification(`Welcome back, ${user.name}!`);
+}
+
+function handleSignup(e) {
+  // …after creating account…
+  uponLoginSuccess();
+  showNotification('Account created! Here are your goals.');
+}
+
+
+
+
 
 </script>
   
