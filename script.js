@@ -1,3 +1,8 @@
+// Top of script.js
+let incomeExpensesPieChart = null;
+let monthlyExpensesChart   = null;
+let expenseCategoryChart   = null;
+  
   // Dream Tracker App JavaScript 
 document.addEventListener('DOMContentLoaded', function () {
   // Always hide dashboard at first load
@@ -333,38 +338,53 @@ function performLogout() {
   showAuthScreen();
     }
 
-    function applyProfileDisplay() {
-      const imgEl = document.getElementById('profilePic');
-      const initialEl = document.getElementById('avatarInitial');
-      const previewEl = document.getElementById('settingsProfilePicPreview');
-      const settingsInitialEl = document.getElementById('settingsAvatarInitial');
+function applyProfileDisplay() {
+  const user = appState.auth.currentUser;
+  const userDisplayEl     = document.getElementById('userDisplay');
+  const logoutBtnEl       = document.getElementById('logoutBtn');
+  const settingsBtnEl     = document.getElementById('openSettingsBtn');
+  const imgEl             = document.getElementById('profilePic');
+  const initialEl         = document.getElementById('avatarInitial');
+  const previewEl         = document.getElementById('settingsProfilePicPreview');
+  const settingsInitialEl = document.getElementById('settingsAvatarInitial');
+  const nameEl            = document.getElementById('currentUserName');
 
-      if (appState.settings.profilePic) {
-        imgEl.src = appState.settings.profilePic;
-        imgEl.classList.remove('hidden');
-        initialEl.classList.add('hidden');
+  // If no user is logged in, hide all profile UI and bail out
+  if (!user) {
+    userDisplayEl.classList.add('hidden');
+    logoutBtnEl.classList.add('hidden');
+    settingsBtnEl.classList.add('hidden');
+    return;
+  }
 
-        previewEl.src = appState.settings.profilePic;
-        previewEl.classList.remove('hidden');
-        settingsInitialEl.classList.add('hidden');
-      } else {
-        imgEl.classList.add('hidden');
-        initialEl.classList.remove('hidden');
-        initialEl.textContent = appState.auth.currentUser
-          ? appState.auth.currentUser.name.charAt(0).toUpperCase()
-          : 'G';
-        settingsInitialEl.textContent = appState.auth.currentUser
-          ? appState.auth.currentUser.name.charAt(0).toUpperCase()
-          : 'G';
-        settingsInitialEl.classList.remove('hidden');
-        previewEl.classList.add('hidden');
-      }
+  // Otherwise, show the container and buttons
+  userDisplayEl.classList.remove('hidden');
+  logoutBtnEl.classList.remove('hidden');
+  settingsBtnEl.classList.remove('hidden');
 
-      // Show logout button
-      document.getElementById('logoutBtn').classList.remove('hidden');
-      // Show settings button once logged in
-      document.getElementById('openSettingsBtn').classList.remove('hidden');
-    }
+  // Update the displayed name
+  nameEl.textContent = user.name;
+
+  // If they have a custom profilePic, show it; otherwise show their initial
+  if (appState.settings.profilePic) {
+    imgEl.src = appState.settings.profilePic;
+    imgEl.classList.remove('hidden');
+    initialEl.classList.add('hidden');
+
+    previewEl.src = appState.settings.profilePic;
+    previewEl.classList.remove('hidden');
+    settingsInitialEl.classList.add('hidden');
+  } else {
+    imgEl.classList.add('hidden');
+    initialEl.classList.remove('hidden');
+    initialEl.textContent = user.name.charAt(0).toUpperCase();
+
+    settingsInitialEl.classList.remove('hidden');
+    settingsInitialEl.textContent = user.name.charAt(0).toUpperCase();
+    previewEl.classList.add('hidden');
+  }
+}
+
 
     function updateUserDisplay(name) {
       document.getElementById('currentUserName').textContent = name;
@@ -1826,9 +1846,6 @@ function renderIncomeExpensesPie(income, expenses) {
   ).join('');
   document.getElementById('pieLegend').innerHTML = `<div class="chart-legend">${legendHtml}</div>`;
 }
-
-let monthlyExpensesChart = null;
-let expenseCategoryChart = null;
 
 function updateCharts() {
   renderMonthlyExpensesChart();
