@@ -1654,36 +1654,34 @@ function showDashboard() {
       initApp();
     });
 
-    // Initialize the app
-    function initApp() {
-      // Load data from localStorage if available
-      const savedState = localStorage.getItem('dreamTrackerApp');
-      if (savedState) {
-        try {
-          const parsedState = JSON.parse(savedState);
-          Object.assign(appState, parsedState);
+function initApp() {
+  // Load state
+  const saved = localStorage.getItem('dreamTrackerApp');
+  if (saved) {
+    try {
+      Object.assign(appState, JSON.parse(saved));
+    } catch (e) {
+      console.error('Corrupt app state, resetting…', e);
+      localStorage.removeItem('dreamTrackerApp');
+    }
+  }
 
-          if (appState.auth.isLoggedIn) {
-            applyProfileDisplay();
-            if (appState.household.name && appState.goals.length > 0) {
-              showDashboard();
-              updateDashboard();
-            } else {
-              showWelcomeScreen();
-            }
-          }
-        } catch (e) {
-          console.error('Error loading saved data:', e);
-          localStorage.removeItem('dreamTrackerApp');
-        }
-      }
+  // Always default all screens hidden (you probably already have these)
+  showAuthScreen();
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('householdSetup').classList.add('hidden');
+  document.getElementById('goalsSetup').classList.add('hidden');
 
-      // Set today's date as default for date inputs
-      const today = new Date().toISOString().split('T')[0];
-      const dateInputs = document.querySelectorAll('input[type="date"]');
-      dateInputs.forEach((input) => {
-        input.value = today;
-      });
+  if (appState.auth.isLoggedIn) {
+    // Once we have a logged‐in user, show the dashboard straight away
+    applyProfileDisplay();
+    showDashboard();
+    updateDashboard();
+  }
+  
+  // (rest of your initialization: date inputs, event-listeners, etc.)
+}
 
       // Auth tab switching
       document.getElementById('signupTab').addEventListener('click', () => {
