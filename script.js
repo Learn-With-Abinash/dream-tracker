@@ -281,7 +281,10 @@ function initApp() {
       saveAppState();
 
       // Update profile display
-      applyProfileDisplay();
+      if (appState.auth.isLoggedIn) {
+  applyProfileDisplay();
+}
+
 
     showDashboard();
     updateDashboard();
@@ -315,7 +318,10 @@ function initApp() {
     saveAppState();
 
     // Update UI
-    applyProfileDisplay();
+if (appState.auth.isLoggedIn) {
+  applyProfileDisplay();
+}
+
     updateDashboard();      // ensure all cards/stats are correct
     showDashboard();        // go straight to the dashboard
     showDailyGoalsModal();  // your new popup
@@ -337,55 +343,7 @@ function performLogout() {
   saveAppState();
   showAuthScreen();
     }
-
-function applyProfileDisplay() {
-  const user = appState.auth.currentUser;
-  const userDisplayEl     = document.getElementById('userDisplay');
-  const logoutBtnEl       = document.getElementById('logoutBtn');
-  const settingsBtnEl     = document.getElementById('openSettingsBtn');
-  const imgEl             = document.getElementById('profilePic');
-  const initialEl         = document.getElementById('avatarInitial');
-  const previewEl         = document.getElementById('settingsProfilePicPreview');
-  const settingsInitialEl = document.getElementById('settingsAvatarInitial');
-  const nameEl            = document.getElementById('currentUserName');
-
-  // If no user is logged in, hide all profile UI and bail out
-  if (!user) {
-    userDisplayEl.classList.add('hidden');
-    logoutBtnEl.classList.add('hidden');
-    settingsBtnEl.classList.add('hidden');
-    return;
-  }
-
-  // Otherwise, show the container and buttons
-  userDisplayEl.classList.remove('hidden');
-  logoutBtnEl.classList.remove('hidden');
-  settingsBtnEl.classList.remove('hidden');
-
-  // Update the displayed name
-  nameEl.textContent = user.name;
-
-  // If they have a custom profilePic, show it; otherwise show their initial
-  if (appState.settings.profilePic) {
-    imgEl.src = appState.settings.profilePic;
-    imgEl.classList.remove('hidden');
-    initialEl.classList.add('hidden');
-
-    previewEl.src = appState.settings.profilePic;
-    previewEl.classList.remove('hidden');
-    settingsInitialEl.classList.add('hidden');
-  } else {
-    imgEl.classList.add('hidden');
-    initialEl.classList.remove('hidden');
-    initialEl.textContent = user.name.charAt(0).toUpperCase();
-
-    settingsInitialEl.classList.remove('hidden');
-    settingsInitialEl.textContent = user.name.charAt(0).toUpperCase();
-    previewEl.classList.add('hidden');
-  }
-}
-
-
+    
     function updateUserDisplay(name) {
       document.getElementById('currentUserName').textContent = name;
       document.getElementById('userDisplay').classList.remove('hidden');
@@ -951,7 +909,10 @@ function handleAddGoal(e) {
     // Settings handlers
     function openSettingsModal() {
       // Populate profile picture preview/initial
-      applyProfileDisplay();
+if (appState.auth.isLoggedIn) {
+  applyProfileDisplay();
+}
+
 
       // Populate existing goals for editing
       const list = document.getElementById('settingsGoalsList');
@@ -1035,7 +996,10 @@ function handleAddGoal(e) {
         const base64 = e.target.result;
         appState.settings.profilePic = base64;
         saveAppState();
-        applyProfileDisplay();
+if (appState.auth.isLoggedIn) {
+  applyProfileDisplay();
+}
+
       };
       reader.readAsDataURL(file);
     }
@@ -2000,7 +1964,10 @@ document.getElementById('closeDailyGoals').addEventListener('click', () => {
 // Call this right after login/signup succeeds
 function uponLoginSuccess() {
   // your existing post-login logic...
+if (appState.auth.isLoggedIn) {
   applyProfileDisplay();
+}
+
   updateDashboard();
   // now show daily goals
   showDailyGoalsModal();
@@ -2022,23 +1989,50 @@ function handleSignup(e) {
   showNotification('Account created! Here are your goals.');
 }
 function applyProfileDisplay() {
-  const profileName = document.getElementById('profileName');
-  const profileEmail = document.getElementById('profileEmail');
-  const profileAvatar = document.getElementById('profileAvatar');
+  const user = appState.auth.currentUser;
+  // If no user is logged in, hide profile UI and stop here
+  if (!user) {
+    document.getElementById('userDisplay').classList.add('hidden');
+    document.getElementById('logoutBtn').classList.add('hidden');
+    document.getElementById('openSettingsBtn').classList.add('hidden');
+    return;
+  }
 
-  if (appState.auth.isLoggedIn) {
-    profileName.textContent = appState.auth.user.name;
-    profileEmail.textContent = appState.auth.user.email;
-    profileAvatar.textContent = appState.auth.user.name.charAt(0).toUpperCase();
+  // Otherwise show and populate
+  document.getElementById('userDisplay').classList.remove('hidden');
+  document.getElementById('logoutBtn').classList.remove('hidden');
+  document.getElementById('openSettingsBtn').classList.remove('hidden');
+  document.getElementById('currentUserName').textContent = user.name;
+
+  const imgEl             = document.getElementById('profilePic');
+  const initialEl         = document.getElementById('avatarInitial');
+  const previewEl         = document.getElementById('settingsProfilePicPreview');
+  const settingsInitialEl = document.getElementById('settingsAvatarInitial');
+
+  if (appState.settings.profilePic) {
+    imgEl.src = appState.settings.profilePic;
+    imgEl.classList.remove('hidden');
+    initialEl.classList.add('hidden');
+
+    previewEl.src = appState.settings.profilePic;
+    previewEl.classList.remove('hidden');
+    settingsInitialEl.classList.add('hidden');
   } else {
-    profileName.textContent = 'Guest';
-    profileEmail.textContent = '';
-    profileAvatar.textContent = 'G';
+    imgEl.classList.add('hidden');
+    initialEl.classList.remove('hidden');
+    initialEl.textContent = user.name.charAt(0).toUpperCase();
+
+    settingsInitialEl.classList.remove('hidden');
+    settingsInitialEl.textContent = user.name.charAt(0).toUpperCase();
+    previewEl.classList.add('hidden');
   }
 }
 
     // Initial setup
-    applyProfileDisplay();
+    if (appState.auth.isLoggedIn) {
+  applyProfileDisplay();
+}
+
     updateDashboard();
     updateHouseholdMembersList();
     updateMembersList();
