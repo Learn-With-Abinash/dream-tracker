@@ -1845,15 +1845,6 @@ function showDashboard() {
       // Show welcome screen
       showWelcomeScreen();
 
-    // Show next appropriate screen:
-    if (!appState.household.name) {
-        showWelcomeScreen();
-    } else if (!appState.goals.length) {
-        showGoalsSetup();
-    } else {
-        showDashboard();
-    }
-
       // Show success notification
       showNotification('Account created successfully! Welcome to Dream Tracker.');
 
@@ -1866,58 +1857,42 @@ function showDashboard() {
 
     }
 
-    function handleLogin(e) {
-      e.preventDefault();
+      async function handleLogin(e) {
+    e.preventDefault();
 
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
 
-      // Find user
-      const user = appState.auth.users.find(
-        (user) => user.email === email && user.password === password
-      );
-
-      if (!user) {
-        showNotification('Invalid email or password', 'error');
-        return;
-      }
-
-      // Log in user
-      appState.auth.isLoggedIn = true;
-      appState.auth.currentUser = user;
-
-      // Save to localStorage
-      saveAppState();
-
-      // Update profile display
-      applyProfileDisplay();
-
-      // Show appropriate screen
-      if (appState.household.name && appState.goals.length > 0) {
-        showDashboard();
-        updateDashboard();
-      } else {
-        showWelcomeScreen();
-      }
-  // Show next appropriate screen:
-  if (!appState.household.name) {
-    showWelcomeScreen();
-  } else if (!appState.goals.length) {
-    showGoalsSetup();
-  } else {
-    showDashboard();
-  }
-      // Show success notification
-      showNotification(`Welcome back, ${user.name}!`);
-
-      // Update user display
-      updateUserDisplay(user.name);
-    
-  if (loginSuccessful) {
-    showDashboard(); // Or showWelcomeScreen() if needed
-  }  
-
+    // Find user
+    const user = appState.auth.users.find(
+      u => u.email === email && u.password === password
+    );
+    if (!user) {
+      showNotification('Invalid email or password', 'error');
+      return;
     }
+
+    // Log in
+    appState.auth.isLoggedIn = true;
+    appState.auth.currentUser = user;
+    saveAppState();
+
+    // Update UI
+    applyProfileDisplay();
+    updateDashboard();      // ensure all cards/stats are correct
+    showDashboard();        // go straight to the dashboard
+    showDailyGoalsModal();  // your new popup
+
+    // Notify
+    showNotification(`Welcome back, ${user.name}!`);
+        // Update user display
+        updateUserDisplay(user.name);
+      
+    if (loginSuccessful) {
+      showDashboard(); // Or showWelcomeScreen() if needed
+    }  
+
+      }
 
 function performLogout() {
   appState.auth.isLoggedIn = false;
