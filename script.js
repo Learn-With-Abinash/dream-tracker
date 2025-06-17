@@ -1089,29 +1089,27 @@ function handleAddGoal(e) {
     }
   });
 
-    function updateSummaryCards() {
-    
-  // Calculate values
-  const totalSavings    = appState.goals.reduce((sum, g) => sum + g.currentSavings, 0);
-  const householdIncome = appState.household.members.reduce((sum, m) => sum + m.income, 0);
-  const totalExpenses   = appState.expenses.reduce((sum, e) => sum + e.amount, 0);
+    function updateSummaryCards() {  
+  // 1) Compute your numbers
+  const totalSavings    = appState.goals.reduce((sum,g) => sum + g.currentSavings, 0);
+  const householdIncome = appState.household.members.reduce((sum,m) => sum + m.income, 0);
+  const totalExpenses   = appState.expenses.reduce((sum,e) => sum + e.amount, 0);
   const netIncome       = householdIncome - totalExpenses;
-  const daily           = householdIncome > 0 
-                          ? (householdIncome / 30).toFixed(2) 
-                          : 0;
+  const dailyIncomeVal  = householdIncome > 0 ? (householdIncome / 30).toFixed(2) : 0;
+  const monthlyRecVal   = (dailyIncomeVal * 30).toFixed(2);
 
-  // Update DOM directly
-  document.getElementById('totalSavings').textContent           = `₹${formatNumber(totalSavings)}`;
-  document.getElementById('totalGoals').textContent             = `${appState.goals.length} goal${appState.goals.length!==1?'s':''}`;
-  document.getElementById('householdIncome').textContent        = `₹${formatNumber(householdIncome)}`;
-  document.getElementById('householdMemberCount').textContent   = `${appState.household.members.length} member${appState.household.members.length!==1?'s':''}`;
-  document.getElementById('netIncome').textContent              = `₹${formatNumber(netIncome)}`;
-  document.getElementById('leftoverIncome').textContent         = netIncome > 0 
-                                                                  ? `Leftover ₹${formatNumber(netIncome)}` 
-                                                                  : 'Expenses exceed income!';
-  document.getElementById('dailyIncome').textContent            = `₹${formatNumber(parseFloat(daily))} / day`;
-  document.getElementById('monthlyRecommendation').textContent  = `Recommended: ₹${formatNumber(daily * 30)} / month`;
-    }
+  // 2) Update the DOM directly
+  document.getElementById('totalSavings').textContent          = `₹${formatNumber(totalSavings)}`;
+  document.getElementById('totalGoals').textContent            = `${appState.goals.length} goal${appState.goals.length !== 1 ? 's' : ''}`;
+  document.getElementById('householdIncome').textContent       = `₹${formatNumber(householdIncome)}`;
+  document.getElementById('householdMemberCount').textContent  = `${appState.household.members.length} member${appState.household.members.length !== 1 ? 's' : ''}`;
+  document.getElementById('netIncome').textContent             = `₹${formatNumber(netIncome)}`;
+  document.getElementById('leftoverIncome').textContent        = netIncome > 0
+    ? `Leftover available for savings: ₹${formatNumber(netIncome)}`
+    : 'Warning: Expenses exceed income!';
+  document.getElementById('dailyIncome').textContent           = `₹${formatNumber(parseFloat(dailyIncomeVal))} / day`;
+  document.getElementById('monthlyRecommendation').textContent = `Recommended: ₹${formatNumber(parseFloat(monthlyRecVal))} / month`;
+}
 
     function updateNextGoalsDueCard() {
       const container = document.getElementById('nextGoalsContainer');
