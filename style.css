@@ -1,0 +1,138 @@
+    /* inside your existing <style> */
+    #dailyGoalsModal .snap-x { scroll-snap-type: x mandatory; }
+    .goal-card–popup {
+    flex: 0 0 80%;
+    scroll-snap-align: start;
+    background: #f9fafb;
+    border-radius: .75rem;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f4f8;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    }
+    .card {
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    .progress-bar {
+      transition: width 1s ease-in-out;
+    }
+    .input-field:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    }
+    .tab-active {
+      border-bottom: 3px solid #8b5cf6;
+      color: #8b5cf6;
+    }
+    .goal-card {
+      border-left: 4px solid;
+    }
+    .dark-theme {
+      background-color: #1f2937;
+      color: #e5e7eb;
+    }
+    .dark-theme input,
+    .dark-theme select,
+    .dark-theme textarea {
+      background-color: #374151;
+      color: #e5e7eb;
+      border-color: #4b5563;
+    }
+    /* Category color borders */
+    .goal-card-home { border-color: #8b5cf6; }
+    .goal-card-car { border-color: #2563eb; }
+    .goal-card-electronics { border-color: #f59e0b; }
+    .goal-card-furniture { border-color: #10b981; }
+    .goal-card-other { border-color: #ef4444; }
+    .category-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 0%;
+      object-fit: cover;
+    }
+    .contributor-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: #8b5cf6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    .auth-container {
+      min-height: 500px;
+    }
+    .auth-form {
+      max-width: 400px;
+    }
+    .auth-tabs {
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .auth-tab {
+      position: relative;
+      cursor: pointer;
+    }
+    .auth-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: #8b5cf6;
+    }
+    .auth-tab.active {
+      color: #8b5cf6;
+      font-weight: 500;
+    }
+    /* Hide file input default appearance */
+    #profilePicInput {
+      display: none;
+    }
+    /* Expense category style */
+    .expense-category-label {
+      display: inline-flex;
+      align-items: center;
+      background-color: #eef2ff;
+      color: #6366f1;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      margin-right: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+#incomeExpensesCard .chart-legend {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+#incomeExpensesCard .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+#incomeExpensesCard .legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.hidden {
+  display: none !important;
+}
+
