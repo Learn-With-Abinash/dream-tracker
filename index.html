@@ -1840,14 +1840,10 @@ function initApp() {
       // Update profile display
       applyProfileDisplay();
 
-      // Show welcome screen
-      showWelcomeScreen();
-
-      // Show success notification
-      showNotification('Account created successfully! Welcome to Dream Tracker.');
-
-      // Update user display
-      updateUserDisplay(newUser.name);
+    showDashboard();
+    updateDashboard();
+    showNotification('Account created successfully! Welcome to Dream Tracker.');
+    updateUserDisplay(newUser.name);
 
     if (signupSuccessful) {
     showDashboard(); // Or showWelcomeScreen() if you need setup first
