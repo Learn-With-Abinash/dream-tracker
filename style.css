@@ -1,6 +1,6 @@
     /* inside your existing <style> */
     #dailyGoalsModal .snap-x { scroll-snap-type: x mandatory; }
-    .goal-card–popup {
+    .goal-card-popup {
     flex: 0 0 80%;
     scroll-snap-align: start;
     background: #f9fafb;
