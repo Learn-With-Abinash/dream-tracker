@@ -114,14 +114,17 @@ function handleSignup(e) {
     showNotification('Email already registered','error');
     return;
   }
-  const user = { id: generateId(), name, email, password: pwd };
-  appState.auth.users.push(user);
-  appState.auth.isLoggedIn = true;
-  appState.auth.currentUser = user;
+  // Create and log in the user:
+  const newUser = { id: generateId(), name, email, password };
+  appState.auth.users.push(newUser);
+  appState.auth.isLoggedIn   = true;
+  appState.auth.currentUser  = newUser;
   saveAppState();
   applyProfileDisplay();
-  uponLoginSuccess();
-  showNotification('Account created! Welcome.');
+
+  // *** Show the welcome/get-started screen, not the dashboard ***
+  showWelcomeScreen();
+  showNotification('Account created! Welcome to Dream Tracker.');
 }
 
 function handleLogin(e) {
