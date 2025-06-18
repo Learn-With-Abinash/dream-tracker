@@ -467,7 +467,7 @@ function performLogout() {
     }
 
 const SUN_ICON_URL  = 'https://cdn-icons-png.flaticon.com/512/869/869869.png'; // sun
-const MOON_ICON_URL = 'https://cdn-icons-png.flaticon.com/512/202/2024058.png'; // moon
+const MOON_ICON_URL = 'https://cdn-icons-png.flaticon.com/512/2024/2024058.png'; // moon
 
 function toggleTheme() {
   const body = document.body;
