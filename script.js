@@ -469,7 +469,6 @@ function performLogout() {
 const SUN_ICON_URL  = 'https://cdn-icons-png.flaticon.com/512/869/869869.png'; // sun
 const MOON_ICON_URL = 'https://cdn-icons-png.flaticon.com/512/869/869924.png'; // moon
 
-
 function toggleTheme() {
   const body = document.body;
   const icon = document.querySelector('#toggleTheme img');
@@ -491,6 +490,15 @@ function toggleTheme() {
   saveAppState();
 }
 
+// right after you apply body.classList for the theme:
+const initIcon = document.querySelector('#toggleTheme img');
+if (appState.theme === 'dark') {
+  initIcon.src = SUN_ICON_URL;
+  initIcon.alt = 'Sun';
+} else {
+  initIcon.src = MOON_ICON_URL;
+  initIcon.alt = 'Moon';
+}
 
     // Forgot Password functions
     function openForgotModal() {
