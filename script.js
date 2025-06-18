@@ -1788,34 +1788,45 @@ sortedExpenses.forEach((entry) => {
 
 function renderIncomeExpensesPie(income, expenses) {
   const leftover = Math.max(income - expenses, 0);
-  const ctx = document.getElementById('incomeExpensesPie').getContext('2d');
+
+  // 1) Grab the canvas and its 2D context
+  const canvas = document.getElementById('incomeExpensesPie');
+  const ctx = canvas.getContext('2d');    // ← make sure it's declared!
+
+  // 2) Destroy any existing chart
   if (window.incomeExpensesPieChart) {
     window.incomeExpensesPieChart.destroy();
   }
+
+  // 3) Create the new pie chart
   window.incomeExpensesPieChart = new Chart(ctx, {
     type: 'pie',
     data: {
       labels: ['Income', 'Expenses', 'Leftover'],
       datasets: [{
         data: [income, expenses, leftover],
-        backgroundColor: ['#22c55e', '#f59e42', '#3b82f6'],
+        backgroundColor: ['#22c55e', '#f59e42', '#3b82f6']
       }]
     },
     options: {
       plugins: {
         legend: { display: false }
-      }
+      },
+      responsive: false
     }
   });
 
-  // Custom legend
+  // 4) Build a custom legend if you need one
   const colors = ['#22c55e', '#f59e42', '#3b82f6'];
-  const labels = ['Income', 'Expenses', 'Leftover'];
-  const legendHtml = labels.map((label, i) =>
-    `<span class="legend-item"><span class="legend-color" style="background:${colors[i]}"></span>${label}</span>`
+  const labels = ['Income','Expenses','Leftover'];
+  const legendHtml = labels.map((label,i) =>
+    `<span class="legend-item">
+       <span class="legend-color" style="background:${colors[i]}"></span>${label}
+     </span>`
   ).join('');
   document.getElementById('pieLegend').innerHTML = `<div class="chart-legend">${legendHtml}</div>`;
 }
+
 
 function updateCharts() {
   renderMonthlyExpensesChart();
