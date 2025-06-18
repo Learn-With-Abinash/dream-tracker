@@ -119,7 +119,10 @@ function initApp() {
 
   if (appState.auth.isLoggedIn) {
     // Once we have a logged‐in user, show the dashboard straight away
-    applyProfileDisplay();
+    if (appState.auth.isLoggedIn && appState.auth.currentUser) {
+  applyProfileDisplay();
+}
+
     showDashboard();
     updateDashboard();
   }
@@ -281,9 +284,10 @@ function initApp() {
       saveAppState();
 
       // Update profile display
-      if (appState.auth.isLoggedIn) {
+if (appState.auth.isLoggedIn && appState.auth.currentUser) {
   applyProfileDisplay();
 }
+
 
 
     showDashboard();
@@ -318,9 +322,10 @@ function initApp() {
     saveAppState();
 
     // Update UI
-if (appState.auth.isLoggedIn) {
+if (appState.auth.isLoggedIn && appState.auth.currentUser) {
   applyProfileDisplay();
 }
+
 
     updateDashboard();      // ensure all cards/stats are correct
     showDashboard();        // go straight to the dashboard
@@ -343,7 +348,7 @@ function performLogout() {
   saveAppState();
   showAuthScreen();
     }
-    
+
     function updateUserDisplay(name) {
       document.getElementById('currentUserName').textContent = name;
       document.getElementById('userDisplay').classList.remove('hidden');
@@ -909,9 +914,10 @@ function handleAddGoal(e) {
     // Settings handlers
     function openSettingsModal() {
       // Populate profile picture preview/initial
-if (appState.auth.isLoggedIn) {
+if (appState.auth.isLoggedIn && appState.auth.currentUser) {
   applyProfileDisplay();
 }
+
 
 
       // Populate existing goals for editing
@@ -996,7 +1002,7 @@ if (appState.auth.isLoggedIn) {
         const base64 = e.target.result;
         appState.settings.profilePic = base64;
         saveAppState();
-if (appState.auth.isLoggedIn) {
+if (appState.auth.isLoggedIn && appState.auth.currentUser) {
   applyProfileDisplay();
 }
 
@@ -1964,7 +1970,7 @@ document.getElementById('closeDailyGoals').addEventListener('click', () => {
 // Call this right after login/signup succeeds
 function uponLoginSuccess() {
   // your existing post-login logic...
-if (appState.auth.isLoggedIn) {
+if (appState.auth.isLoggedIn && appState.auth.currentUser) {
   applyProfileDisplay();
 }
 
@@ -1988,9 +1994,10 @@ function handleSignup(e) {
   uponLoginSuccess();
   showNotification('Account created! Here are your goals.');
 }
+
 function applyProfileDisplay() {
   const user = appState.auth.currentUser;
-  // If no user is logged in, hide profile UI and stop here
+  // 1) If there's no user, hide profile UI and stop here.
   if (!user) {
     document.getElementById('userDisplay').classList.add('hidden');
     document.getElementById('logoutBtn').classList.add('hidden');
@@ -1998,12 +2005,13 @@ function applyProfileDisplay() {
     return;
   }
 
-  // Otherwise show and populate
+  // 2) Otherwise, show the profile container and buttons
   document.getElementById('userDisplay').classList.remove('hidden');
   document.getElementById('logoutBtn').classList.remove('hidden');
   document.getElementById('openSettingsBtn').classList.remove('hidden');
   document.getElementById('currentUserName').textContent = user.name;
 
+  // 3) Update avatar vs initial
   const imgEl             = document.getElementById('profilePic');
   const initialEl         = document.getElementById('avatarInitial');
   const previewEl         = document.getElementById('settingsProfilePicPreview');
@@ -2028,10 +2036,12 @@ function applyProfileDisplay() {
   }
 }
 
+
     // Initial setup
-    if (appState.auth.isLoggedIn) {
+if (appState.auth.isLoggedIn && appState.auth.currentUser) {
   applyProfileDisplay();
 }
+
 
     updateDashboard();
     updateHouseholdMembersList();
