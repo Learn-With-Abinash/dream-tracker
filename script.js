@@ -1091,6 +1091,37 @@ if (appState.auth.isLoggedIn && appState.auth.currentUser) {
   });
 
     function updateSummaryCards() {  
+
+  // 1) Totals across all goals
+  const totalCostAll       = appState.goals.reduce((sum, g) => sum + g.cost, 0);
+  const totalSavedSoFar    = appState.goals.reduce((sum, g) => sum + g.currentSavings, 0);
+  const totalRemainingAll  = totalCostAll - totalSavedSoFar;
+
+  // 2) Time horizon: days until the *furthest* goal target
+  const today       = Date.now();
+  const targetDates = appState.goals.map(g => new Date(g.targetDate).getTime());
+  // If no goals, default horizon = 30 days
+  const maxTargetMs = targetDates.length
+    ? Math.max(...targetDates)
+    : today + 30 * 24*3600*1000;
+  const daysLeftAll = Math.max(
+    1,
+    Math.ceil((maxTargetMs - today) / (1000 * 60 * 60 * 24))
+  );
+
+  // 3) Required earnings
+  const reqDaily   = totalRemainingAll / daysLeftAll;
+  const reqWeekly  = reqDaily * 7;
+  const reqMonthly = reqDaily * 30;
+
+  // 4) Write into the DOM
+  document.getElementById('dailyIncome').textContent =
+    `₹${formatNumber(reqDaily.toFixed(2))} / day`;
+  document.getElementById('leftoverIncome').textContent =
+    `₹${formatNumber(reqWeekly.toFixed(2))} / week`;
+  document.getElementById('monthlyRecommendation').textContent =
+    `₹${formatNumber(reqMonthly.toFixed(2))} / month`;
+
     // 1) Compute your totals
   const totalSavings    = appState.goals.reduce((sum, g) => sum + g.currentSavings, 0);
   const householdIncome = appState.household.members.reduce((sum, m) => sum + m.income, 0);
